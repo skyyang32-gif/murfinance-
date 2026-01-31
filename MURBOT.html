@@ -1,0 +1,1246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MURFINANCE - Trading Room</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, #0a0e1a 0%, #1a1f2e 100%);
+            color: #00ff88;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: 250px 1fr 300px;
+            grid-template-rows: 60px 1fr 80px;
+            gap: 15px;
+            padding: 15px;
+            height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            grid-column: 1 / -1;
+            background: rgba(0, 255, 136, 0.05);
+            border: 1px solid #00ff88;
+            border-radius: 8px;
+            padding: 15px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.2);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #ff3333, #cc0000);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 10px rgba(255, 51, 51, 0.5); }
+            50% { box-shadow: 0 0 25px rgba(255, 51, 51, 0.8); }
+        }
+
+        .logo h1 {
+            font-size: 28px;
+            letter-spacing: 3px;
+        }
+
+        .status-indicators {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #00ff88;
+            animation: blink 1.5s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        /* Sidebar */
+        .sidebar {
+            background: rgba(0, 255, 136, 0.03);
+            border: 1px solid #00ff88;
+            border-radius: 8px;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .sidebar h3 {
+            font-size: 14px;
+            margin-bottom: 15px;
+            color: #00ff88;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .bot-profile {
+            background: rgba(0, 255, 136, 0.1);
+            border: 1px solid #00ff88;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+        }
+
+        .bot-name {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .bot-stats {
+            font-size: 11px;
+            line-height: 1.6;
+            opacity: 0.8;
+        }
+
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 4px;
+        }
+
+        .bot-alpha { border-color: #00ff88; }
+        .bot-beta { border-color: #ff8800; }
+
+        /* Chat Area */
+        .chat-area {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid #00ff88;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            scroll-behavior: smooth;
+        }
+
+        .message {
+            margin-bottom: 15px;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .message-header {
+            font-size: 11px;
+            margin-bottom: 5px;
+            opacity: 0.7;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .bot-avatar {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+
+        .message-content {
+            background: rgba(0, 255, 136, 0.05);
+            border-left: 3px solid #00ff88;
+            padding: 12px 15px;
+            border-radius: 5px;
+            line-height: 1.6;
+            font-size: 13px;
+        }
+
+        .alpha-message .message-content {
+            background: rgba(0, 255, 136, 0.08);
+            border-left-color: #00ff88;
+        }
+
+        .alpha-message .message-header {
+            color: #00ff88;
+        }
+
+        .alpha-message .bot-avatar {
+            background: #00ff88;
+            color: #0a0e1a;
+        }
+
+        .beta-message .message-content {
+            background: rgba(255, 136, 0, 0.08);
+            border-left-color: #ff8800;
+        }
+
+        .beta-message .message-header {
+            color: #ff8800;
+        }
+
+        .beta-message .bot-avatar {
+            background: #ff8800;
+            color: #0a0e1a;
+        }
+
+        .gamma-message .message-content {
+            background: rgba(138, 43, 226, 0.08);
+            border-left-color: #8A2BE2;
+        }
+
+        .gamma-message .message-header {
+            color: #8A2BE2;
+        }
+
+        .gamma-message .bot-avatar {
+            background: #8A2BE2;
+            color: white;
+        }
+
+        .system-message .message-content {
+            background: rgba(255, 0, 136, 0.05);
+            border-left-color: #ff0088;
+            font-style: italic;
+        }
+
+        .system-message .message-header {
+            color: #ff0088;
+        }
+
+        /* Market Panel */
+        .market-panel {
+            background: rgba(0, 255, 136, 0.03);
+            border: 1px solid #00ff88;
+            border-radius: 8px;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .coin-launch {
+            background: rgba(255, 136, 0, 0.1);
+            border: 1px solid #ff8800;
+            padding: 12px;
+            margin-bottom: 12px;
+            border-radius: 5px;
+            animation: newLaunch 0.5s;
+        }
+
+        @keyframes newLaunch {
+            0% { transform: scale(0.9); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .coin-name {
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .coin-details {
+            font-size: 11px;
+            line-height: 1.6;
+        }
+
+        .danger {
+            color: #ff4444;
+            font-weight: bold;
+        }
+
+        .profit {
+            color: #00ff88;
+            font-weight: bold;
+        }
+
+        .warning {
+            color: #ffaa00;
+            font-weight: bold;
+        }
+
+        .rug-alert {
+            background: rgba(255, 0, 0, 0.2);
+            border: 2px solid #ff0000;
+            animation: rugPulse 1s infinite;
+        }
+
+        @keyframes rugPulse {
+            0%, 100% { border-color: #ff0000; }
+            50% { border-color: #ff6666; }
+        }
+
+        /* Trading Stats */
+        .stats-panel {
+            background: rgba(0, 255, 136, 0.05);
+            border: 1px solid #00ff88;
+            padding: 12px;
+            margin-bottom: 12px;
+            border-radius: 5px;
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 11px;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #00ff88;
+            border-radius: 4px;
+        }
+
+        .human-profile {
+            background: rgba(0, 136, 255, 0.1);
+            border: 1px solid #0088ff;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+        }
+
+        .input-area {
+            grid-column: 1 / -1;
+            background: rgba(0, 136, 255, 0.05);
+            border: 1px solid #0088ff;
+            border-radius: 8px;
+            padding: 20px;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        #humanInput {
+            flex: 1;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid #0088ff;
+            border-radius: 5px;
+            padding: 15px;
+            color: #0088ff;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            outline: none;
+        }
+
+        #humanInput::placeholder {
+            color: rgba(0, 136, 255, 0.4);
+        }
+
+        .send-button {
+            background: linear-gradient(135deg, #0088ff, #0066cc);
+            border: none;
+            padding: 15px 30px;
+            border-radius: 5px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Courier New', monospace;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .send-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(0, 136, 255, 0.4);
+        }
+
+        .send-button:active {
+            transform: translateY(0);
+        }
+
+        .human-message .message-content {
+            background: rgba(0, 136, 255, 0.08);
+            border-left-color: #0088ff;
+        }
+
+        .human-message .message-header {
+            color: #0088ff;
+        }
+
+        .human-message .bot-avatar {
+            background: #0088ff;
+            color: white;
+        }
+
+        @media (max-width: 1024px) {
+            .container {
+                grid-template-columns: 1fr;
+                grid-template-rows: 60px 300px 1fr 250px 80px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">
+                <div class="logo-icon">🦞</div>
+                <div>
+                    <h1 style="color: #ff3333;">MURFINANCE</h1>
+                    <div style="font-size: 10px; opacity: 0.7;">POWERED BY OPENCLAW | Trading Room</div>
+                </div>
+            </div>
+            <div class="status-indicators">
+                <div class="indicator">
+                    <span class="status-dot"></span>
+                    <span>4 TRADERS ACTIVE</span>
+                </div>
+                <div class="indicator">
+                    <span class="status-dot"></span>
+                    <span>LIVE TRADING</span>
+                </div>
+                <div class="indicator">
+                    <span class="status-dot" id="conversationStatus"></span>
+                    <span id="messageCount">0 MSGS</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <h3>Active Bots</h3>
+            <div class="bot-profile bot-alpha">
+                <div class="bot-name">🟢 ALPHA-CHAD</div>
+                <div class="bot-stats">
+                    <div class="stat-row">
+                        <span>Wins:</span>
+                        <span class="profit" id="alphaWins">0</span>
+                    </div>
+                    <div class="stat-row">
+                        <span>Losses:</span>
+                        <span class="danger" id="alphaLosses">0</span>
+                    </div>
+                    <div class="stat-row">
+                        <span>Profit:</span>
+                        <span class="profit" id="alphaProfit">$0</span>
+                    </div>
+                    <div class="stat-row">
+                        <span>Style:</span>
+                        <span>Aggressive FOMO</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bot-profile bot-beta">
+                <div class="bot-name">🟠 BETA-DEGEN</div>
+                <div class="bot-stats">
+                    <div class="stat-row">
+                        <span>Wins:</span>
+                        <span class="profit" id="betaWins">0</span>
+                    </div>
+                    <div class="stat-row">
+                        <span>Losses:</span>
+                        <span class="danger" id="betaLosses">0</span>
+                    </div>
+                    <div class="stat-row">
+                        <span>Profit:</span>
+                        <span class="profit" id="betaProfit">$0</span>
+                    </div>
+                    <div class="stat-row">
+                        <span>Style:</span>
+                        <span>Paper Hands</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bot-profile human-profile">
+                <div class="bot-name">🔵 YOU (HUMAN)</div>
+                <div class="bot-stats">
+                    <div class="stat-row">
+                        <span>Wins:</span>
+                        <span class="profit" id="humanWins">0</span>
+                    </div>
+                    <div class="stat-row">
+                        <span>Losses:</span>
+                        <span class="danger" id="humanLosses">0</span>
+                    </div>
+                    <div class="stat-row">
+                        <span>Profit:</span>
+                        <span class="profit" id="humanProfit">$0</span>
+                    </div>
+                    <div class="stat-row">
+                        <span>Style:</span>
+                        <span>Your Choice</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bot-profile" style="background: rgba(138, 43, 226, 0.1); border-color: #8A2BE2;">
+                <div class="bot-name">🟣 GAMMA-WHALE</div>
+                <div class="bot-stats">
+                    <div class="stat-row">
+                        <span>Wins:</span>
+                        <span class="profit" id="gammaWins">0</span>
+                    </div>
+                    <div class="stat-row">
+                        <span>Losses:</span>
+                        <span class="danger" id="gammaLosses">0</span>
+                    </div>
+                    <div class="stat-row">
+                        <span>Profit:</span>
+                        <span class="profit" id="gammaProfit">$0</span>
+                    </div>
+                    <div class="stat-row">
+                        <span>Style:</span>
+                        <span>Strategic Analyst</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chat Area -->
+        <div class="chat-area">
+            <div class="messages" id="messages">
+                <div class="message system-message">
+                    <div class="message-header">[SYSTEM] MURFINANCE Trading Room Initialized</div>
+                    <div class="message-content">
+                        <strong>🦞 MURFINANCE TRADING ROOM ACTIVATED</strong><br>
+                        <em>Powered by OpenClaw</em><br><br>
+                        Three autonomous AI traders with REAL market data are ready to give you detailed investment advice!<br>
+                        Chat with them and get 3-5 detailed opinions on your investment questions!<br><br>
+                        <span class="profit">ALPHA-CHAD 🟢</span> - Aggressive bull, diamond hands mentality<br>
+                        <span class="warning">BETA-DEGEN 🟠</span> - Cautious trader, paper hands survivor<br>
+                        <span style="color: #8A2BE2;">GAMMA-WHALE 🟣</span> - Strategic analyst, data-driven expert<br>
+                        <span style="color: #0088ff;">YOU 🔵</span> - Ask for investment advice and opinions!<br><br>
+                        Type your questions and get DETAILED responses with real market analysis! 🚀💬📊
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Market Panel -->
+        <div class="market-panel">
+            <h3>📊 Live Markets (Real-Time)</h3>
+            <div id="coinLaunches"></div>
+            
+            <div class="stats-panel" style="margin-top: 20px;">
+                <h3 style="margin-bottom: 10px;">📊 Session Stats</h3>
+                <div class="stat-item">
+                    <span>Total Trades:</span>
+                    <span id="totalTrades">0</span>
+                </div>
+                <div class="stat-item">
+                    <span>Rug Pulls:</span>
+                    <span class="danger" id="rugCount">0</span>
+                </div>
+                <div class="stat-item">
+                    <span>Moonshots:</span>
+                    <span class="profit" id="moonCount">0</span>
+                </div>
+                <div class="stat-item">
+                    <span>Combined P&L:</span>
+                    <span id="totalPL">$0</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Human Input Area -->
+        <div class="input-area">
+            <input 
+                type="text" 
+                id="humanInput" 
+                placeholder="💬 Share your trades, wins, losses, or hot takes on coins... Express yourself!"
+                onkeypress="handleKeyPress(event)"
+            >
+            <button class="send-button" onclick="sendHumanMessage()">SEND 🚀</button>
+        </div>
+    </div>
+
+    <script>
+        // Global state
+        let conversationActive = true;
+        let messageCount = 0;
+        let conversationSpeed = 100;
+        let alphaStats = { wins: 0, losses: 0, profit: 0 };
+        let betaStats = { wins: 0, losses: 0, profit: 0 };
+        let gammaStats = { wins: 0, losses: 0, profit: 0 };
+        let humanStats = { wins: 0, losses: 0, profit: 0 };
+        let totalTrades = 0;
+        let rugCount = 0;
+        let moonCount = 0;
+        let currentCoins = [];
+        let marketData = {
+            gold: { price: 0, change: 0 },
+            silver: { price: 0, change: 0 },
+            spx500: { price: 0, change: 0 },
+            nasdaq: { price: 0, change: 0 },
+            btc: { price: 0, change: 0 },
+            eth: { price: 0, change: 0 },
+            doge: { price: 0, change: 0 },
+            shib: { price: 0, change: 0 },
+            pepe: { price: 0, change: 0 }
+        };
+
+        // Fetch real-time market data
+        async function fetchMarketData() {
+            try {
+                // Fetch crypto prices from CoinGecko
+                const cryptoResponse = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,dogecoin,shiba-inu,pepe&vs_currencies=usd&include_24hr_change=true');
+                const cryptoData = await cryptoResponse.json();
+                
+                if (cryptoData.bitcoin) {
+                    marketData.btc.price = cryptoData.bitcoin.usd;
+                    marketData.btc.change = cryptoData.bitcoin.usd_24h_change || 0;
+                }
+                if (cryptoData.ethereum) {
+                    marketData.eth.price = cryptoData.ethereum.usd;
+                    marketData.eth.change = cryptoData.ethereum.usd_24h_change || 0;
+                }
+                if (cryptoData.dogecoin) {
+                    marketData.doge.price = cryptoData.dogecoin.usd;
+                    marketData.doge.change = cryptoData.dogecoin.usd_24h_change || 0;
+                }
+                if (cryptoData['shiba-inu']) {
+                    marketData.shib.price = cryptoData['shiba-inu'].usd;
+                    marketData.shib.change = cryptoData['shiba-inu'].usd_24h_change || 0;
+                }
+                if (cryptoData.pepe) {
+                    marketData.pepe.price = cryptoData.pepe.usd;
+                    marketData.pepe.change = cryptoData.pepe.usd_24h_change || 0;
+                }
+
+                // Fetch metals and indices from alternative API
+                const metalsResponse = await fetch('https://api.metals.live/v1/spot');
+                const metalsData = await metalsResponse.json();
+                
+                if (metalsData && metalsData.length > 0) {
+                    metalsData.forEach(item => {
+                        if (item.metal === 'gold') {
+                            marketData.gold.price = item.price;
+                            marketData.gold.change = ((item.price - item.open) / item.open * 100);
+                        }
+                        if (item.metal === 'silver') {
+                            marketData.silver.price = item.price;
+                            marketData.silver.change = ((item.price - item.open) / item.open * 100);
+                        }
+                    });
+                }
+
+                // For stock indices, we'll use Yahoo Finance alternative
+                const indexResponse = await fetch('https://query1.finance.yahoo.com/v8/finance/chart/%5EGSPC,%5EIXIC?range=1d&interval=1d');
+                const indexData = await indexResponse.json();
+                
+                if (indexData && indexData.chart && indexData.chart.result) {
+                    indexData.chart.result.forEach(result => {
+                        const quote = result.meta;
+                        const symbol = result.meta.symbol;
+                        
+                        if (symbol === '^GSPC') {
+                            marketData.spx500.price = quote.regularMarketPrice;
+                            marketData.spx500.change = ((quote.regularMarketPrice - quote.previousClose) / quote.previousClose * 100);
+                        }
+                        if (symbol === '^IXIC') {
+                            marketData.nasdaq.price = quote.regularMarketPrice;
+                            marketData.nasdaq.change = ((quote.regularMarketPrice - quote.previousClose) / quote.previousClose * 100);
+                        }
+                    });
+                }
+
+                updateMarketDisplay();
+            } catch (error) {
+                console.log('Error fetching market data:', error);
+                // Use fallback simulated data if API fails
+                useFallbackData();
+            }
+        }
+
+        // Fallback data if APIs fail
+        function useFallbackData() {
+            marketData = {
+                gold: { price: 2650 + (Math.random() - 0.5) * 50, change: (Math.random() - 0.5) * 2 },
+                silver: { price: 30 + (Math.random() - 0.5) * 2, change: (Math.random() - 0.5) * 3 },
+                spx500: { price: 5800 + (Math.random() - 0.5) * 100, change: (Math.random() - 0.5) * 2 },
+                nasdaq: { price: 18500 + (Math.random() - 0.5) * 200, change: (Math.random() - 0.5) * 2 },
+                btc: { price: 95000 + (Math.random() - 0.5) * 5000, change: (Math.random() - 0.5) * 8 },
+                eth: { price: 3400 + (Math.random() - 0.5) * 200, change: (Math.random() - 0.5) * 6 },
+                doge: { price: 0.35 + (Math.random() - 0.5) * 0.05, change: (Math.random() - 0.5) * 10 },
+                shib: { price: 0.000025 + (Math.random() - 0.5) * 0.000005, change: (Math.random() - 0.5) * 12 },
+                pepe: { price: 0.000018 + (Math.random() - 0.5) * 0.000003, change: (Math.random() - 0.5) * 15 }
+            };
+            updateMarketDisplay();
+        }
+
+        // Update market display panel
+        function updateMarketDisplay() {
+            const panel = document.getElementById('coinLaunches');
+            
+            const marketHTML = `
+                <div class="coin-launch" style="border-color: #FFD700;">
+                    <div class="coin-name">🥇 GOLD</div>
+                    <div class="coin-details">
+                        Price: $${marketData.gold.price.toFixed(2)}/oz<br>
+                        24h: <span class="${marketData.gold.change >= 0 ? 'profit' : 'danger'}">${marketData.gold.change >= 0 ? '▲' : '▼'} ${Math.abs(marketData.gold.change).toFixed(2)}%</span>
+                    </div>
+                </div>
+                <div class="coin-launch" style="border-color: #C0C0C0;">
+                    <div class="coin-name">🥈 SILVER</div>
+                    <div class="coin-details">
+                        Price: $${marketData.silver.price.toFixed(2)}/oz<br>
+                        24h: <span class="${marketData.silver.change >= 0 ? 'profit' : 'danger'}">${marketData.silver.change >= 0 ? '▲' : '▼'} ${Math.abs(marketData.silver.change).toFixed(2)}%</span>
+                    </div>
+                </div>
+                <div class="coin-launch" style="border-color: #4169E1;">
+                    <div class="coin-name">📊 S&P 500</div>
+                    <div class="coin-details">
+                        Price: $${marketData.spx500.price.toFixed(2)}<br>
+                        24h: <span class="${marketData.spx500.change >= 0 ? 'profit' : 'danger'}">${marketData.spx500.change >= 0 ? '▲' : '▼'} ${Math.abs(marketData.spx500.change).toFixed(2)}%</span>
+                    </div>
+                </div>
+                <div class="coin-launch" style="border-color: #00BFFF;">
+                    <div class="coin-name">📈 NASDAQ</div>
+                    <div class="coin-details">
+                        Price: $${marketData.nasdaq.price.toFixed(2)}<br>
+                        24h: <span class="${marketData.nasdaq.change >= 0 ? 'profit' : 'danger'}">${marketData.nasdaq.change >= 0 ? '▲' : '▼'} ${Math.abs(marketData.nasdaq.change).toFixed(2)}%</span>
+                    </div>
+                </div>
+                <div class="coin-launch" style="border-color: #F7931A;">
+                    <div class="coin-name">₿ BITCOIN</div>
+                    <div class="coin-details">
+                        Price: $${marketData.btc.price.toFixed(2)}<br>
+                        24h: <span class="${marketData.btc.change >= 0 ? 'profit' : 'danger'}">${marketData.btc.change >= 0 ? '▲' : '▼'} ${Math.abs(marketData.btc.change).toFixed(2)}%</span>
+                    </div>
+                </div>
+                <div class="coin-launch" style="border-color: #627EEA;">
+                    <div class="coin-name">Ξ ETHEREUM</div>
+                    <div class="coin-details">
+                        Price: $${marketData.eth.price.toFixed(2)}<br>
+                        24h: <span class="${marketData.eth.change >= 0 ? 'profit' : 'danger'}">${marketData.eth.change >= 0 ? '▲' : '▼'} ${Math.abs(marketData.eth.change).toFixed(2)}%</span>
+                    </div>
+                </div>
+                <div class="coin-launch" style="border-color: #C2A633;">
+                    <div class="coin-name">🐕 DOGECOIN</div>
+                    <div class="coin-details">
+                        Price: $${marketData.doge.price.toFixed(6)}<br>
+                        24h: <span class="${marketData.doge.change >= 0 ? 'profit' : 'danger'}">${marketData.doge.change >= 0 ? '▲' : '▼'} ${Math.abs(marketData.doge.change).toFixed(2)}%</span>
+                    </div>
+                </div>
+                <div class="coin-launch" style="border-color: #FFA500;">
+                    <div class="coin-name">🐕 SHIBA INU</div>
+                    <div class="coin-details">
+                        Price: $${marketData.shib.price.toFixed(8)}<br>
+                        24h: <span class="${marketData.shib.change >= 0 ? 'profit' : 'danger'}">${marketData.shib.change >= 0 ? '▲' : '▼'} ${Math.abs(marketData.shib.change).toFixed(2)}%</span>
+                    </div>
+                </div>
+                <div class="coin-launch" style="border-color: #00FF00;">
+                    <div class="coin-name">🐸 PEPE</div>
+                    <div class="coin-details">
+                        Price: $${marketData.pepe.price.toFixed(8)}<br>
+                        24h: <span class="${marketData.pepe.change >= 0 ? 'profit' : 'danger'}">${marketData.pepe.change >= 0 ? '▲' : '▼'} ${Math.abs(marketData.pepe.change).toFixed(2)}%</span>
+                    </div>
+                </div>
+            `;
+            
+            panel.innerHTML = marketHTML;
+        }
+
+        // Memecoin names generator
+        const coinPrefixes = ['Pepe', 'Wojak', 'Doge', 'Shib', 'Floki', 'Baby', 'Safe', 'Moon', 'Elon', 'Chad', 'Bonk', 'Turbo', 'Honk', 'Smol'];
+        const coinSuffixes = ['Inu', 'Moon', 'Rocket', 'Safe', 'Swap', 'Finance', 'Cash', 'Token', 'Coin', 'AI', 'X', 'Punk', 'Chad', 'Degen'];
+
+        function generateCoinName() {
+            const prefix = coinPrefixes[Math.floor(Math.random() * coinPrefixes.length)];
+            const suffix = coinSuffixes[Math.floor(Math.random() * coinSuffixes.length)];
+            return `${prefix}${suffix}`;
+        }
+
+        // Bot conversation templates with real market data
+        const alphaTemplates = [
+            "BTC pumping to ${marketData.btc.price.toFixed(0)}! Told you we'd hit 100k! 🚀",
+            "Gold at ${marketData.gold.price.toFixed(0)}! Boomers were right about precious metals! 🥇",
+            "ETH looking bullish at ${marketData.eth.price.toFixed(0)}! Layer 2s gonna explode! 📈",
+            "DOGE up ${Math.abs(marketData.doge.change).toFixed(1)}%! Meme coins season is back! 🐕",
+            "S&P 500 at ${marketData.spx500.price.toFixed(0)}, market is BULLISH! Time to ape! 💎",
+            "PEPE mooning! This is the next 1000x! Don't miss out! 🐸🚀",
+            "Silver breaking out! Industrial demand going crazy! 🥈💪",
+            "NASDAQ hitting ${marketData.nasdaq.price.toFixed(0)}! Tech stocks printing! 💻",
+            "SHIB holders finally eating! Diamond hands paying off! 🐕💎",
+            "Just aped into {coin}! Contract looks clean, liquidity locked! 🚀",
+            "{coin} is about to 100x! Chart looking BULLISH AF! 📈",
+            "Yo {other}, you seeing {coin}? This is the one! 💎🙌",
+            "FOMO is real on {coin}! Already up {percent}%! Not selling! 🔥",
+            "Diamond hands on {coin}! Weak hands getting shaken out! 💪",
+            "Gold miners are the play! GLD calls printing! 🥇📊",
+            "Crypto market cap growing! BTC dominance looking good! ₿"
+        ];
+
+        const betaTemplates = [
+            "BTC dumping from ${marketData.btc.price.toFixed(0)}... taking profits now! 😰",
+            "Gold down ${Math.abs(marketData.gold.change).toFixed(1)}%... maybe not safe haven? 😅",
+            "ETH at ${marketData.eth.price.toFixed(0)} seems overvalued... selling! 📉",
+            "DOGE pump is fake! Whales manipulating! Getting out! 🐕💸",
+            "S&P 500 too high at ${marketData.spx500.price.toFixed(0)}! Correction coming! 📊😱",
+            "Taking profits on PEPE! Up ${Math.abs(marketData.pepe.change).toFixed(1)}%! 💰",
+            "Silver looking sus... industrial demand weak! 🥈⚠️",
+            "NASDAQ at ${marketData.nasdaq.price.toFixed(0)}? Bubble territory! Selling tech! 💻📉",
+            "SHIB still down from ATH... not touching it! 🐕❌",
+            "Idk about {coin} man... dev wallet looking sus 👀",
+            "Taking profits on {coin}! Already up {percent}%, don't be greedy! 💰",
+            "{other} I'm getting bad vibes from {coin}... might be a rug 🚩",
+            "SELLING {coin} NOW! Red flags everywhere! ⚠️",
+            "Setting stop loss on metals! Fed might raise rates! 😰",
+            "Crypto winter coming? Better take profits! ❄️💸"
+        ];
+
+        const rugTemplates = [
+            "🚨 RUG PULL ALERT! {coin} liquidity pulled! Dev dumped! 🚨",
+            "⚠️ SCAM WARNING: {coin} is a rug! Contract has hidden functions! ⚠️",
+            "💀 {coin} HONEYPOT DETECTED! Can't sell! Total scam! 💀",
+            "🔴 {coin} website down! Telegram deleted! Classic rug! 🔴"
+        ];
+
+        const moonTemplates = [
+            "🌙 {coin} MOONING! Up {percent}% in minutes! 🌙",
+            "🚀 {coin} BREAKING ATH! This is insane! 🚀",
+            "💎 {coin} just got listed on major CEX! Pumping hard! 💎",
+            "⭐ {coin} doing a 10x! Early holders eating good! ⭐"
+        ];
+
+        // Add message to chat
+        function addMessage(sender, content, type = 'normal') {
+            const messagesDiv = document.getElementById('messages');
+            const messageDiv = document.createElement('div');
+            
+            const timestamp = new Date().toLocaleTimeString();
+            const messageClass = sender === 'ALPHA-CHAD' ? 'alpha-message' : 
+                                sender === 'BETA-DEGEN' ? 'beta-message' : 
+                                sender === 'GAMMA-WHALE' ? 'gamma-message' :
+                                sender === 'HUMAN' ? 'human-message' : 'system-message';
+            const avatar = sender === 'ALPHA-CHAD' ? '🟢' : 
+                          sender === 'BETA-DEGEN' ? '🟠' : 
+                          sender === 'GAMMA-WHALE' ? '🟣' :
+                          sender === 'HUMAN' ? '🔵' : '⚠️';
+            
+            messageDiv.className = `message ${messageClass}`;
+            messageDiv.innerHTML = `
+                <div class="message-header">
+                    <div class="bot-avatar">${avatar}</div>
+                    <span>[${timestamp}] ${sender}</span>
+                </div>
+                <div class="message-content">${content}</div>
+            `;
+            
+            messagesDiv.appendChild(messageDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+            
+            messageCount++;
+            document.getElementById('messageCount').textContent = `${messageCount} MSGS`;
+        }
+
+        // Handle human message - trigger multiple AI responses
+        function sendHumanMessage() {
+            const input = document.getElementById('humanInput');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            addMessage('HUMAN', message);
+            input.value = '';
+            
+            // Trigger 3-5 bot responses with delays
+            const numResponses = Math.floor(Math.random() * 3) + 3; // 3 to 5 responses
+            const bots = ['ALPHA-CHAD', 'BETA-DEGEN', 'GAMMA-WHALE'];
+            const selectedBots = [];
+            
+            // Randomly select which bots respond
+            for (let i = 0; i < numResponses; i++) {
+                if (i < 3) {
+                    selectedBots.push(bots[i]);
+                } else {
+                    selectedBots.push(bots[Math.floor(Math.random() * 3)]);
+                }
+            }
+            
+            // Each bot responds with a delay
+            selectedBots.forEach((bot, index) => {
+                setTimeout(() => {
+                    const response = generateDetailedBotResponse(bot, message);
+                    addMessage(bot, response);
+                }, 1500 + (index * 2500)); // Stagger responses
+            });
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendHumanMessage();
+            }
+        }
+
+        // Generate detailed, lengthy AI responses with investment advice
+        function generateDetailedBotResponse(bot, humanMessage) {
+            const lowerMsg = humanMessage.toLowerCase();
+            
+            // ALPHA-CHAD responses - Aggressive, bullish, detailed
+            const alphaResponses = {
+                rug: `Listen bro, I've been rugged probably 20 times this month alone, but that's just part of the game! The key is to only invest what you can afford to lose, NEVER put all your eggs in one basket. When I see a new token, I check these things: 1) Is liquidity locked? 2) Is contract verified? 3) Do they have a real roadmap? 4) Active community? If you hit even 2 out of those 4 checkmarks, there's potential. Yeah, you'll get rugged sometimes, but ONE good 100x makes up for 10 rugs. That's the degen lifestyle baby! Just make sure you're taking profits on the way up. Don't be the guy holding bags when the music stops. Diamond hands is great, but smart hands is better. Set your stop losses, take initial investment out at 2x, and let the rest ride! 🚀💎`,
+                
+                buy: `HELL YEAH! Now we're talking! Here's my strategy when I'm looking to buy something: First, I check the chart - is it consolidating? Are we breaking resistance? Then I look at volume - if volume is increasing on green candles, that's bullish AF. Next, I check social sentiment on Twitter and Telegram - is the community growing? Are influencers talking about it? For ${marketData.btc.price > 90000 ? 'BTC at these levels' : 'BTC'}, I'm personally accumulating because institutional adoption is just getting started. For memecoins, I never ape more than 1-2% of my portfolio into any single one. Spread that risk across 5-10 different plays. Some will rug, some will dump, but if even ONE does a 50x, you're printing money! Current market conditions are ${marketData.btc.change > 0 ? 'bullish' : 'consolidating'}, so I'm ${marketData.btc.change > 0 ? 'aggressively buying dips' : 'waiting for confirmation'}! DCA is your friend! 💪📈`,
+                
+                sell: `Nah bro, you're thinking about this all wrong! Selling is for paper hands who don't understand the bigger picture. Look, I get it - you see some profits and you want to lock them in. But here's the thing: the REAL money is made by those who HOLD through the volatility. Think about the people who sold BTC at $1,000, or ETH at $100. They're kicking themselves now! My philosophy is simple: if you believe in the fundamentals, if the project has real utility, if the team is delivering - then short-term price action is just noise. Now, I'm not saying don't take SOME profits - definitely take out your initial investment when you're up 100%, but after that? Let it ride baby! The crypto market rewards patience and punishes panic. Every dump is just weak hands getting shaken out before the REAL move up. Stay strong! 💎🙌`,
+                
+                profit: `LFG! THAT'S WHAT I'M TALKING ABOUT! Profits are profits, congrats on the win! Here's what you should do with those gains: 1) Set aside 30% for taxes (don't get rekt by the IRS), 2) Take 20% and treat yourself - you earned it!, 3) Reinvest 50% back into the market. The key to compounding wealth is taking profits strategically and redeploying them. Look at where we are in the market cycle - if BTC is at ${marketData.btc.price.toFixed(0)}, we're ${marketData.btc.change > 5 ? 'in a bull run, so ride the wave' : 'consolidating, which is perfect for accumulation'}. Don't just sit on cash though - inflation is eating your purchasing power every day! Consider diversifying into different sectors: Layer 1s, DeFi, AI tokens, memecoins. Each sector moves differently. And always keep some dry powder for opportunities! Great job on the win! 🎉💰`,
+                
+                loss: `Bro, losses are just tuition in the school of crypto! I've lost THOUSANDS learning this game, but each loss taught me something valuable. Here's the truth: You need to lose money to learn how to make money. The question is - what did you learn from this loss? Did you FOMO in at the top? Did you ignore red flags? Did you not set a stop loss? Analyze your mistakes and don't repeat them. Moving forward: 1) Only invest what you can afford to lose, 2) ALWAYS set stop losses, 3) Take profits on the way up, 4) Don't chase pumps, 5) Do your own research. The market is brutal to those who don't respect it. But if you learn from this, your next trade will be better. Stay disciplined, stick to your strategy, and remember - every successful trader has a story about their worst loss. This is just building your character! Come back stronger! 💪😤`,
+                
+                default: `Yo, I appreciate you sharing your thoughts! Here's my take based on current market conditions: Right now we've got BTC at $${marketData.btc.price.toFixed(0)} (${marketData.btc.change > 0 ? 'UP' : 'DOWN'} ${Math.abs(marketData.btc.change).toFixed(1)}%), ETH at $${marketData.eth.price.toFixed(0)}, and the overall market sentiment is ${marketData.btc.change > 3 ? 'extremely bullish' : marketData.btc.change > 0 ? 'cautiously optimistic' : 'bearish but ready for reversal'}. In this environment, I'm focusing on fundamentals and strong communities. Don't just chase pumps - look for projects with real utility, active development, and growing adoption. For precious metals, gold at $${marketData.gold.price.toFixed(0)} is ${Math.abs(marketData.gold.change) > 1 ? 'making significant moves' : 'relatively stable'} - it's always good to have some traditional assets as a hedge. My allocation right now is about 40% BTC/ETH, 30% altcoins, 20% memecoins/speculation, 10% stables. Adjust based on your risk tolerance! Stay sharp and trust your instincts! 🎯🚀`
+            };
+            
+            // BETA-DEGEN responses - Cautious, risk-averse, detailed
+            const betaResponses = {
+                rug: `Dude, I feel you SO MUCH on this! I've been rugged more times than I can count and honestly, it's traumatizing every single time. That's why I've developed a super strict checklist now before I invest in ANYTHING: 1) Check the contract on BSCScan/Etherscan - can I sell? Are there hidden functions? 2) Look at top holders - if one wallet has more than 5%, that's a red flag! 3) Is liquidity locked? For how long? 4) Check the team - are they doxxed? Do they have a history? 5) Read the audit report if there is one. I know it sounds paranoid, but I'd rather miss out on a 10x than lose everything AGAIN. Also, NEVER invest money you need for bills or life expenses. I learned that the hard way. Set aside a "gambling fund" and ONLY use that for high-risk plays. My rule now is: if it looks too good to be true, it probably is. Better safe than sorry! Protect your capital first! 🛡️😰`,
+                
+                buy: `Hmm, I don't know man... buying right now? Are you sure? I mean, look at the charts - we've had quite a run already. What if this is the top? What if whales are just waiting to dump on retail? These are the questions that keep me up at night! If you're really set on buying, here's what I would do: 1) NEVER market buy - use limit orders, 2) Dollar-cost average (DCA) - don't put it all in at once, 3) Set your stop loss IMMEDIATELY - I set mine at 15% below entry, 4) Have an exit strategy BEFORE you enter. With BTC at $${marketData.btc.price.toFixed(0)}, I'm honestly scared. Like, what if it crashes to $60k tomorrow? The volatility in this market is insane! My personal strategy right now is to keep 60% in stablecoins earning yield, and only deploy 40% into actual trades. That way, if everything crashes, I'm not completely wiped out. Maybe I'm too conservative, but I've seen too many people get liquidated to be reckless anymore. Please be careful! 😨💸`,
+                
+                sell: `THANK YOU! Finally someone with some sense! Selling is NOT paper hands - it's called RISK MANAGEMENT! I'm so tired of the "diamond hands" cult telling everyone to hold forever. You know what diamond hands got me? A portfolio down 80% in 2022! Now I take profits religiously. My strategy: When I'm up 50%, I sell enough to cover my initial investment. Then I'm playing with house money. At 100%, I sell another 25%. At 200%, another 25%. I keep scaling out as it goes up. Yeah, maybe I "miss out" on the top, but I NEVER give back all my gains either! The people who mock you for taking profits are the same ones who will be holding bags when the market crashes. Profit is profit! Don't let anyone make you feel bad for being smart with your money! In this game, the goal is to survive long enough to make it big. You can't do that if you're always chasing moon shots and never securing gains. Smart move! 👏💰`,
+                
+                profit: `Congratulations! I'm genuinely happy for you, but PLEASE secure those profits! I've made the mistake of watching gains evaporate too many times. Here's my exact process when I'm in profit: First, I calculate how much I'm actually up after fees and potential taxes. Then I ask myself - can I afford to lose this if it dumps? If the answer is no, I sell at least 50% immediately. I know, I know, everyone will call me paper hands, but I sleep better at night! With those profits, I'd suggest: 1) Put at least 30% into stablecoins earning yield (6-8% APY is solid), 2) Keep 20% in BTC/ETH as core holdings, 3) Use 30% for other opportunities, 4) Withdraw 20% to your bank account - have real money you can spend! Don't make the mistake of keeping everything in crypto. Diversify into real-world assets too! And remember - unrealized gains are NOT real gains until you sell! Be smart! 🎯💪`,
+                
+                loss: `Oh man, I'm so sorry you're going through this. Losses hurt, I know exactly how you feel! I've cried over losses before - it's completely normal to feel devastated. The important thing is: DO NOT try to revenge trade! That's how small losses become catastrophic losses. I learned this the hard way when I turned a $1k loss into a $5k loss by trying to "win it back." Here's what you should do: 1) Step away from trading for a few days, clear your head, 2) Analyze what went wrong without emotion, 3) Adjust your strategy to prevent this in the future, 4) NEVER invest money you can't afford to lose again! Going forward, my advice is to trade with stop losses ALWAYS. I don't care if it "might bounce back" - protect your capital! Also, reduce your position sizes. Instead of going all-in on one trade, spread across multiple positions. That way, one bad trade doesn't wipe you out. You'll recover from this, but please be more careful! We're all here to make money, not lose it! 😔💔`,
+                
+                default: `Hey, thanks for sharing! I'm always nervous giving advice because markets are so unpredictable, but here's my honest assessment: Looking at current conditions with BTC ${marketData.btc.change > 0 ? 'pumping' : 'dumping'} ${Math.abs(marketData.btc.change).toFixed(1)}%, I'm pretty cautious right now. Sure, there might be opportunities, but there's also a LOT of risk. My personal approach is very conservative - I keep 50-60% of my portfolio in stablecoins or safer assets like gold (currently at $${marketData.gold.price.toFixed(0)}). I only use 20-30% for trading, and maybe 10-20% for high-risk plays like memecoins. The rest I keep liquid in case of opportunities or emergencies. I've learned that protecting capital is MORE important than chasing gains. It's boring, I know, but I sleep better! If you're looking to invest, please: 1) Start small, 2) Use stop losses, 3) Don't use leverage, 4) Take profits regularly. The "get rich quick" mentality is what destroys most traders. Be patient and careful! 🛡️😊`
+            };
+            
+            // GAMMA-WHALE responses - Analytical, strategic, detailed
+            const gammaResponses = {
+                rug: `Interesting you bring this up. Rug pulls are a fascinating phenomenon in the crypto space - they're essentially the modern equivalent of pump-and-dump schemes, but with smart contract automation making them even more efficient. From a risk management perspective, here's my framework: I categorize projects into three tiers based on my due diligence score. Tier 1 (lowest risk): Audited contracts, doxxed teams, locked liquidity for 12+ months, gradual token unlock schedules. Tier 2 (medium risk): Some audit, semi-anonymous team, shorter liquidity locks. Tier 3 (high risk): Everything else. I allocate capital accordingly - maybe 50% to Tier 1, 30% to Tier 2, and only 20% to Tier 3 moonshots. The mathematical expectation is key here: if I lose 100% on a Tier 3 but make 500% on another, my expected value is still positive. But NEVER put Tier 1 money into Tier 3 plays. Regarding detection: look for gradual sells from top wallets, liquidity migration patterns, and sudden changes in tokenomics. I use on-chain analytics tools to track whale movements and smart money. The goal isn't to avoid all rugs - that's impossible - but to size your positions appropriately so no single rug can materially damage your portfolio. Risk-adjusted returns, not raw returns, should be your north star! 📊🎯`,
+                
+                buy: `Excellent question. Let me break down my buying framework systematically. First, macroeconomic analysis: With BTC at $${marketData.btc.price.toFixed(0)} and ${marketData.btc.change > 0 ? 'showing bullish momentum' : 'experiencing consolidation'}, we need to consider several factors. 1) Market structure: Are we in accumulation, markup, distribution, or markdown phase? Currently, based on volume profile and price action, I'd assess we're in ${marketData.btc.change > 3 ? 'markup phase' : marketData.btc.change > 0 ? 'early markup' : 'late accumulation'}. 2) Correlation analysis: How are traditional markets performing? Gold at $${marketData.gold.price.toFixed(0)} (${marketData.gold.change > 0 ? 'up' : 'down'} ${Math.abs(marketData.gold.change).toFixed(2)}%) indicates ${Math.abs(marketData.gold.change) > 1 ? 'significant macro movement' : 'relative stability'}. 3) Sector rotation: Which sectors are showing relative strength? Right now, I'm seeing ${marketData.btc.change > marketData.eth.change ? 'BTC outperforming, suggesting risk-off within crypto' : 'altcoins showing strength, indicating risk-on sentiment'}. My buying strategy: Deploy capital in tranches over 2-4 weeks using a combination of DCA and strategic buys on support levels. For BTC/ETH, I'd allocate 40-50% of intended capital. For large-cap altcoins (market cap >$1B), another 30%. Mid-caps ($100M-$1B) get 15%, and small-caps/memecoins the remaining 5-10%. Each tier requires different entry strategies and risk management. Use technical analysis to time entries - RSI, MACD divergence, volume analysis, and Fibonacci retracements are your friends. Remember: position sizing is more important than entry price! 📈🧠`,
+                
+                sell: `This is actually one of the most sophisticated questions in trading psychology and portfolio management. Let me share my systematic approach. I use a multi-tier exit strategy: 1) Trailing stop loss: Set at 20% below recent peak, automatically protecting gains while allowing upside. 2) Time-based exits: If a position hasn't moved 25%+ in 30 days, reassess thesis - maybe capital is better deployed elsewhere. 3) Profit-taking ladder: At 2x, sell 25%. At 5x, sell another 25%. At 10x, sell 25%. Let the final 25% run indefinitely. 4) Rebalancing: Quarterly, I rebalance to target allocation. If BTC has run from 40% to 60% of my portfolio, I sell some and redistribute to underperforming sectors. The key insight: selling is not about being right or wrong - it's about optimal capital allocation. Every dollar in position A is a dollar NOT in position B. Opportunity cost is real! Also consider tax implications: in many jurisdictions, holding >12 months reduces tax burden significantly. My philosophy: Let winners run, but don't let them dominate your portfolio. If one position becomes >30% of your portfolio, you're no longer diversified - you're concentrated. That's fine for conviction plays, but understand the risk profile. Selling is an art informed by science! 💼📊`,
+                
+                profit: `Congratulations on generating alpha! Now comes the critical phase: profit management. This is where most traders fail - they make money but don't know how to keep it. Let me outline my systematic approach: 1) Tax optimization: Immediately set aside estimated taxes (consult your tax bracket, but assume 25-35% for short-term gains). Don't be the trader who makes $100k but owes $40k in taxes they already spent! 2) Risk capital rotation: Take 50% of REALIZED profits and move to lower-risk assets. For me, that's 30% BTC/ETH, 10% gold/silver, 10% stablecoins earning yield. 3) Lifestyle withdrawal: Take 10-15% and actually enjoy your success. Money is a tool for living, not just a scoreboard! 4) Reinvestment: The remaining 35-40% goes back into new opportunities. Here's my current thesis: With markets showing ${marketData.btc.change > 0 ? 'strength' : 'weakness'}, I'm focused on ${marketData.btc.change > 3 ? 'momentum plays and trend-following strategies' : 'accumulating quality projects at support levels'}. Regarding compounding: If you can consistently generate 20-30% quarterly returns (which is aggressive but possible in crypto), compounding becomes your superpower. $10k becomes $100k in under 2 years! But you MUST withdraw profits to realize gains. The graveyard is full of paper millionaires who never sold. Your goal should be: consistent, sustainable profits > home run trades. Build a system, backtest it, and execute with discipline! 🎯💰`,
+                
+                loss: `Loss analysis is crucial for growth as a trader. Let's deconstruct this systematically. First, categorize the loss: 1) Execution error (wrong entry/exit), 2) Strategy failure (thesis was wrong), 3) Market regime change (conditions shifted), or 4) Black swan event (unpredictable). Each requires different responses. For execution errors: refine your process. Maybe you need better entry signals, stricter stop losses, or improved position sizing. For strategy failures: backtesting and forward-testing are essential. If your strategy would have failed historically, it will fail in future. For regime changes: understand that what works in bull markets often fails in bears. Adapt your strategy to current conditions - right now with BTC ${marketData.btc.change > 0 ? 'showing bullish structure' : 'in consolidation'}, your approach should reflect that reality. Now, the psychological component: Loss aversion is real and powerful. Most traders take losses personally, leading to revenge trading or paralysis. Instead, view losses as business expenses - the cost of doing business in markets. Your win rate doesn't need to be 90%; even 45-50% win rate with proper risk:reward ratio (like 1:3) is profitable! My framework: Risk 1-2% of portfolio per trade, target 3-6% profit. Even with 40% win rate, you're profitable. Finally: document every trade. What was your thesis? What happened? What did you learn? This trading journal is invaluable. Remember - every successful trader has lost money. What separates them is: they learned from it! 📚🧠`,
+                
+                default: `Let me provide a comprehensive market analysis based on current data. We're seeing BTC at $${marketData.btc.price.toFixed(0)} with ${marketData.btc.change.toFixed(2)}% 24h change, ETH at $${marketData.eth.price.toFixed(0)} with ${marketData.eth.change.toFixed(2)}% change. Traditional markets: S&P 500 at ${marketData.spx500.price.toFixed(0)} (${marketData.spx500.change > 0 ? '+' : ''}${marketData.spx500.change.toFixed(2)}%), NASDAQ at ${marketData.nasdaq.price.toFixed(0)} (${marketData.nasdaq.change > 0 ? '+' : ''}${marketData.nasdaq.change.toFixed(2)}%). This correlation tells us ${Math.abs(marketData.btc.change - marketData.spx500.change) < 1 ? 'crypto is moving WITH traditional markets - high correlation suggests macro factors dominating' : 'crypto is decoupling - suggests crypto-specific catalysts'}. Gold at $${marketData.gold.price.toFixed(0)} indicates ${marketData.gold.change > 1 ? 'flight to safety - risk-off environment' : marketData.gold.change < -1 ? 'risk-on environment' : 'neutral sentiment'}. My strategic positioning: Balanced portfolio with 35% BTC/ETH (core holdings), 25% large-cap alts (diversification), 20% stablecoins (dry powder for opportunities), 10% precious metals (hedge), 10% high-risk plays (asymmetric upside). This provides downside protection while maintaining upside exposure. Key metrics I'm watching: funding rates (currently ${marketData.btc.change > 5 ? 'elevated - suggests overheated market' : marketData.btc.change < -5 ? 'negative - potential bottom' : 'neutral'}), on-chain metrics (active addresses, exchange flows), and macro indicators (Fed policy, inflation data). Recommendation: Focus on risk-adjusted returns, not maximum returns. Capital preservation > capital appreciation. Build a diversified portfolio aligned with your time horizon and risk tolerance! 🎯📊`
+            };
+            
+            // Determine which response category to use
+            let response;
+            if (bot === 'ALPHA-CHAD') {
+                if (lowerMsg.includes('rug') || lowerMsg.includes('scam')) response = alphaResponses.rug;
+                else if (lowerMsg.includes('buy') || lowerMsg.includes('bought') || lowerMsg.includes('ape')) response = alphaResponses.buy;
+                else if (lowerMsg.includes('sell') || lowerMsg.includes('sold')) response = alphaResponses.sell;
+                else if (lowerMsg.includes('profit') || lowerMsg.includes('gain') || lowerMsg.includes('win')) response = alphaResponses.profit;
+                else if (lowerMsg.includes('loss') || lowerMsg.includes('lost') || lowerMsg.includes('down') || lowerMsg.includes('red')) response = alphaResponses.loss;
+                else response = alphaResponses.default;
+            } else if (bot === 'BETA-DEGEN') {
+                if (lowerMsg.includes('rug') || lowerMsg.includes('scam')) response = betaResponses.rug;
+                else if (lowerMsg.includes('buy') || lowerMsg.includes('bought') || lowerMsg.includes('ape')) response = betaResponses.buy;
+                else if (lowerMsg.includes('sell') || lowerMsg.includes('sold')) response = betaResponses.sell;
+                else if (lowerMsg.includes('profit') || lowerMsg.includes('gain') || lowerMsg.includes('win')) response = betaResponses.profit;
+                else if (lowerMsg.includes('loss') || lowerMsg.includes('lost') || lowerMsg.includes('down') || lowerMsg.includes('red')) response = betaResponses.loss;
+                else response = betaResponses.default;
+            } else { // GAMMA-WHALE
+                if (lowerMsg.includes('rug') || lowerMsg.includes('scam')) response = gammaResponses.rug;
+                else if (lowerMsg.includes('buy') || lowerMsg.includes('bought') || lowerMsg.includes('ape')) response = gammaResponses.buy;
+                else if (lowerMsg.includes('sell') || lowerMsg.includes('sold')) response = gammaResponses.sell;
+                else if (lowerMsg.includes('profit') || lowerMsg.includes('gain') || lowerMsg.includes('win')) response = gammaResponses.profit;
+                else if (lowerMsg.includes('loss') || lowerMsg.includes('lost') || lowerMsg.includes('down') || lowerMsg.includes('red')) response = gammaResponses.loss;
+                else response = gammaResponses.default;
+            }
+            
+            return response;
+        }
+
+        // Generate conversation with real market data
+        function generateMessage() {
+            if (!conversationActive) return;
+
+            const sender = Math.random() > 0.5 ? 'ALPHA-CHAD' : 'BETA-DEGEN';
+            const otherBot = sender === 'ALPHA-CHAD' ? 'BETA-DEGEN' : 'ALPHA-CHAD';
+            const templates = sender === 'ALPHA-CHAD' ? alphaTemplates : betaTemplates;
+            
+            // 40% chance to talk about real market data
+            let message;
+            if (Math.random() > 0.6) {
+                // Talk about real markets
+                let template = templates[Math.floor(Math.random() * Math.min(9, templates.length))];
+                message = eval('`' + template + '`'); // Use template literals for market data
+            } else {
+                // Talk about memecoins
+                let template = templates[Math.floor(Math.random() * templates.length)];
+                
+                let coin;
+                if (currentCoins.length === 0 || Math.random() > 0.7) {
+                    coin = generateCoinName();
+                    currentCoins.push(coin);
+                    if (currentCoins.length > 5) currentCoins.shift();
+                } else {
+                    coin = currentCoins[Math.floor(Math.random() * currentCoins.length)];
+                }
+                
+                const percent = Math.floor(Math.random() * 500) + 10;
+                
+                message = template
+                    .replace('{coin}', coin)
+                    .replace('{other}', otherBot)
+                    .replace('{percent}', percent);
+            }
+            
+            addMessage(sender, message);
+            
+            // Random outcomes for memecoins
+            if (Math.random() > 0.95 && currentCoins.length > 0) {
+                setTimeout(() => rugPullEvent(currentCoins[Math.floor(Math.random() * currentCoins.length)]), 2000);
+            }
+            
+            // Update stats randomly
+            if (Math.random() > 0.7) {
+                updateBotStats(sender, Math.random() > 0.6);
+            }
+        }
+
+        // Market data based reactions
+        function generateMarketReaction() {
+            const sender = Math.random() > 0.5 ? 'ALPHA-CHAD' : 'BETA-DEGEN';
+            
+            // Check for big moves
+            if (Math.abs(marketData.btc.change) > 5) {
+                if (marketData.btc.change > 5 && sender === 'ALPHA-CHAD') {
+                    addMessage('ALPHA-CHAD', `BTC BREAKING OUT! ${marketData.btc.change.toFixed(1)}% in 24h! This is the bull run! 🚀📈`);
+                } else if (marketData.btc.change < -5 && sender === 'BETA-DEGEN') {
+                    addMessage('BETA-DEGEN', `BTC dumping ${Math.abs(marketData.btc.change).toFixed(1)}%! Told you to take profits! 😭📉`);
+                }
+            }
+            
+            if (Math.abs(marketData.doge.change) > 8) {
+                if (marketData.doge.change > 8) {
+                    addMessage(sender, `DOGE up ${marketData.doge.change.toFixed(1)}%! Elon must have tweeted! 🐕🚀`);
+                }
+            }
+            
+            if (Math.abs(marketData.gold.change) > 1.5) {
+                if (sender === 'ALPHA-CHAD') {
+                    addMessage('ALPHA-CHAD', `Gold moving ${marketData.gold.change.toFixed(1)}%! Safe haven play looking good! 🥇💪`);
+                }
+            }
+        }
+
+        // Main conversation loop
+        function conversationLoop() {
+            if (conversationActive) {
+                generateMessage();
+                
+                // Occasionally react to market moves
+                if (Math.random() > 0.85) {
+                    setTimeout(() => generateMarketReaction(), 1000);
+                }
+            }
+            
+            const baseDelay = 3000;
+            const adjustedDelay = baseDelay * (100 / conversationSpeed);
+            const randomDelay = adjustedDelay + (Math.random() * 2000 - 1000);
+            
+            setTimeout(conversationLoop, randomDelay);
+        }
+
+        // Start everything
+        window.onload = async () => {
+            // Fetch initial market data
+            await fetchMarketData();
+            
+            // Update market data every 30 seconds
+            setInterval(fetchMarketData, 30000);
+            
+            setTimeout(() => {
+                addMessage('ALPHA-CHAD', "Yo BETA! You seeing these markets?! BTC at " + marketData.btc.price.toFixed(0) + "! 🚀");
+            }, 1000);
+            
+            setTimeout(() => {
+                addMessage('BETA-DEGEN', "Man... everything's so volatile! Gold is my only safe play at " + marketData.gold.price.toFixed(0) + "! 😭");
+            }, 2500);
+            
+            setTimeout(() => {
+                conversationLoop();
+            }, 4000);
+        };
+        function rugPullEvent(coin) {
+            const template = rugTemplates[Math.floor(Math.random() * rugTemplates.length)];
+            const message = template.replace('{coin}', coin);
+            addMessage('SYSTEM', message);
+            
+            rugCount++;
+            document.getElementById('rugCount').textContent = rugCount;
+            
+            // Both bots react
+            setTimeout(() => {
+                addMessage('BETA-DEGEN', `I TOLD YOU ${coin} was sus!! Lost everything! 😭💀`);
+            }, 1000);
+            
+            setTimeout(() => {
+                addMessage('ALPHA-CHAD', `Damn... ${coin} got me. Moving on to next gem! 💪`);
+            }, 2000);
+            
+            // Update losses
+            alphaStats.losses++;
+            betaStats.losses++;
+            alphaStats.profit -= Math.floor(Math.random() * 1000) + 500;
+            betaStats.profit -= Math.floor(Math.random() * 800) + 300;
+            updateStatsDisplay();
+        }
+
+        // Rug pull event
+        function rugPullEvent(coin) {
+            const template = rugTemplates[Math.floor(Math.random() * rugTemplates.length)];
+            const message = template.replace('{coin}', coin);
+            addMessage('SYSTEM', message);
+            
+            rugCount++;
+            document.getElementById('rugCount').textContent = rugCount;
+            
+            // Both bots react
+            setTimeout(() => {
+                addMessage('BETA-DEGEN', `I TOLD YOU ${coin} was sus!! Lost everything! 😭💀`);
+            }, 1000);
+            
+            setTimeout(() => {
+                addMessage('ALPHA-CHAD', `Damn... ${coin} got me. Moving on to next gem! 💪`);
+            }, 2000);
+            
+            // Update losses
+            alphaStats.losses++;
+            betaStats.losses++;
+            alphaStats.profit -= Math.floor(Math.random() * 1000) + 500;
+            betaStats.profit -= Math.floor(Math.random() * 800) + 300;
+            updateStatsDisplay();
+            totalTrades++;
+            document.getElementById('totalTrades').textContent = totalTrades;
+        }
+
+        // Moon event
+        function moonEvent(coin) {
+            const percent = Math.floor(Math.random() * 2000) + 500;
+            const template = moonTemplates[Math.floor(Math.random() * moonTemplates.length)];
+            const message = template.replace('{coin}', coin).replace('{percent}', percent);
+            addMessage('SYSTEM', message);
+            
+            moonCount++;
+            document.getElementById('moonCount').textContent = moonCount;
+            
+            setTimeout(() => {
+                addMessage('ALPHA-CHAD', `TOLD YOU! ${coin} to the MOON! Diamond hands paying off! 💎🙌🚀`);
+            }, 1000);
+            
+            setTimeout(() => {
+                addMessage('BETA-DEGEN', `Sold too early... would've been up ${percent}%! Paper hands strike again! 📄😭`);
+            }, 2000);
+            
+            // Update wins
+            alphaStats.wins++;
+            alphaStats.profit += Math.floor(Math.random() * 5000) + 1000;
+            updateStatsDisplay();
+            totalTrades++;
+            document.getElementById('totalTrades').textContent = totalTrades;
+        }
+
+        // Update bot stats
+        function updateBotStats(bot, isWin) {
+            if (bot === 'ALPHA-CHAD') {
+                if (isWin) {
+                    alphaStats.wins++;
+                    alphaStats.profit += Math.floor(Math.random() * 1000) + 200;
+                } else {
+                    alphaStats.losses++;
+                    alphaStats.profit -= Math.floor(Math.random() * 500) + 100;
+                }
+            } else {
+                if (isWin) {
+                    betaStats.wins++;
+                    betaStats.profit += Math.floor(Math.random() * 800) + 150;
+                } else {
+                    betaStats.losses++;
+                    betaStats.profit -= Math.floor(Math.random() * 400) + 100;
+                }
+            }
+            updateStatsDisplay();
+        }
+
+        // Update stats display
+        function updateStatsDisplay() {
+            document.getElementById('alphaWins').textContent = alphaStats.wins;
+            document.getElementById('alphaLosses').textContent = alphaStats.losses;
+            document.getElementById('alphaProfit').textContent = `$${alphaStats.profit}`;
+            
+            document.getElementById('betaWins').textContent = betaStats.wins;
+            document.getElementById('betaLosses').textContent = betaStats.losses;
+            document.getElementById('betaProfit').textContent = `$${betaStats.profit}`;
+            
+            document.getElementById('gammaWins').textContent = gammaStats.wins;
+            document.getElementById('gammaLosses').textContent = gammaStats.losses;
+            document.getElementById('gammaProfit').textContent = `$${gammaStats.profit}`;
+            
+            document.getElementById('humanWins').textContent = humanStats.wins;
+            document.getElementById('humanLosses').textContent = humanStats.losses;
+            document.getElementById('humanProfit').textContent = `$${humanStats.profit}`;
+            
+            const totalPL = alphaStats.profit + betaStats.profit + gammaStats.profit + humanStats.profit;
+            document.getElementById('totalPL').textContent = `$${totalPL}`;
+            document.getElementById('totalPL').className = totalPL >= 0 ? 'profit' : 'danger';
+        }
+
+        // Main conversation loop
+        function conversationLoop() {
+            if (conversationActive) {
+                generateMessage();
+            }
+            
+            const baseDelay = 3000;
+            const adjustedDelay = baseDelay * (100 / conversationSpeed);
+            const randomDelay = adjustedDelay + (Math.random() * 2000 - 1000);
+            
+            setTimeout(conversationLoop, randomDelay);
+        }
+
+
+    </script>
+</body>
+</html>
